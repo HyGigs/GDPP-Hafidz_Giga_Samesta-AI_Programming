@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     [HideInInspector] public Animator Animator;
 
     private IEnemyState _currentState;
+
     public PatrolState PatrolState = new PatrolState();
     public ChaseState ChaseState = new ChaseState();
     public RetreatState RetreatState = new RetreatState();
@@ -33,7 +34,6 @@ public class Enemy : MonoBehaviour
             Player.OnPowerUpStop += StopRetreating;
         }
     }
-
 
     private void Update()
     {
@@ -60,4 +60,19 @@ public class Enemy : MonoBehaviour
         SwitchState(PatrolState);
     }
 
+    public void Dead()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (_currentState != RetreatState)
+        {
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                collision.gameObject.GetComponent<Player>().Dead();
+            }
+        }
+    }
 }

@@ -1,17 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
 	[SerializeField] private float _speed;
     [SerializeField] private Transform _camera;
     [SerializeField] private float _powerUpDuration;
-
+    [SerializeField] private Transform _respawnPoint;
+    [SerializeField] private int _health;
+    [SerializeField] private TMP_Text _healthText;
 
     private Coroutine _powerUpCoroutine;
     private Rigidbody _rigidBody;
+    private bool _isPowerUpActive;
 
     public Action OnPowerUpStart;
     public Action OnPowerUpStop;
@@ -23,6 +28,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        UpdateUI();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -39,6 +45,39 @@ public class Player : MonoBehaviour
         _rigidBody.velocity = movementDirection * _speed * Time.fixedDeltaTime;
     }
 
+    private IEnumerator StartPowerUp()
+    {
+        _isPowerUpActive = true;
+
+        if (OnPowerUpStart != null)
+        {
+            OnPowerUpStart();
+        }
+
+        yield return new WaitForSeconds(_powerUpDuration);
+        _isPowerUpActive = false;
+
+        if (OnPowerUpStop != null)
+        {
+            OnPowerUpStop();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (_isPowerUpActive)
+        {
+            if (collision.gameObject.CompareTag("Enemy"))
+            {
+                collision.gameObject.GetComponent<Enemy>().Dead();
+            }
+        }
+    }
+
+    private void UpdateUI()
+    {
+        _healthText.text = "Health: " + _health;
+    }
     public void PickPowerUp()
     {
         if (_powerUpCoroutine != null)
@@ -50,19 +89,21 @@ public class Player : MonoBehaviour
         Debug.Log("Pick Power Up");
     }
 
-    private IEnumerator StartPowerUp()
+    public void Dead()
     {
-        if (OnPowerUpStart != null)
+        _health -= 1;
+
+        if (_health > 0)
         {
-            OnPowerUpStart();
+            transform.position = _respawnPoint.position;
+        }
+        else
+        {
+            _health = 0;
+            Debug.Log("Lose");
+            SceneManager.LoadScene("LoseScreen");
         }
 
-        yield return new WaitForSeconds(_powerUpDuration);
-
-        if (OnPowerUpStop != null)
-        {
-            OnPowerUpStop();
-        }
+        UpdateUI();
     }
-
 }
