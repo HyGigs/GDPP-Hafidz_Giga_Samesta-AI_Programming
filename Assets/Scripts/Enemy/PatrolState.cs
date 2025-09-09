@@ -9,6 +9,7 @@ public class PatrolState : IEnemyState
 
     public void EnterState(Enemy enemy)
     {
+        enemy.Animator.SetTrigger("PatrolState");
         _isMoving = false;
     }
 

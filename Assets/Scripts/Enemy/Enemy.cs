@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] public Player Player;
 
     [HideInInspector] public NavMeshAgent NavMeshAgent;
+    [HideInInspector] public Animator Animator;
 
     private IEnemyState _currentState;
     public PatrolState PatrolState = new PatrolState();
@@ -19,6 +20,7 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         NavMeshAgent = GetComponent<NavMeshAgent>();
+        Animator = GetComponent<Animator>();
         _currentState = PatrolState;
         _currentState.EnterState(this);
     }
