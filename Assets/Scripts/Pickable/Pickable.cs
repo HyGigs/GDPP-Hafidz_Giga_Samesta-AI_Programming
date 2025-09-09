@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Pickable : MonoBehaviour
 {
-    [SerializeField] private PickableType _pickableType;
+    [SerializeField] public PickableType PickableType;
 
     public Action<Pickable> OnPicked;
 

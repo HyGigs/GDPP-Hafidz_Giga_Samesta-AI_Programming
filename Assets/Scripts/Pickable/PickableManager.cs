@@ -4,6 +4,8 @@ using System;
 
 public class PickableManager : MonoBehaviour
 {
+    [SerializeField] Player _player;
+
     private List<Pickable> _pickableList = new List<Pickable>();
 
     private void Start()
@@ -27,9 +29,16 @@ public class PickableManager : MonoBehaviour
         _pickableList.Remove(pickable);
         Destroy(pickable.gameObject);
         Debug.Log("Pickable List: " + _pickableList.Count);
+
         if (_pickableList.Count <= 0)
         {
             Debug.Log("Win");
         }
+
+        if (pickable.PickableType == PickableType.PowerUp)
+        {
+            _player?.PickPowerUp();
+        }
+
     }
 }
